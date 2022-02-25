@@ -13,57 +13,64 @@ const Modal = {
     }
 }
 
-//objeto
-const transaction = [
-    {
-        id:1,
-        description: 'Luz',
-        amount: -50000,
-        date: '17/02/2022'
-    },
-    {
-        id:2,
-        description: 'Website',
-        amount: 500000,
-        date: '17/02/2022'
-    },
-    {
-        id:3,
-        description: 'Internet',
-        amount: -20000,
-        date: '17/02/2022'
-    },
-    {
-        id:4,
-        description: 'App',
-        amount: 200000,
-        date: '17/02/2022'
-    },
-]
-
-//objeto Transaction
 const Transaction = {
+    all: [
+        {
+            description: 'Luz',
+            amount: -50000,
+            date: '17/02/2022'
+        },
+        {
+            description: 'Website',
+            amount: 500000,
+            date: '17/02/2022'
+        },
+        {
+            description: 'Internet',
+            amount: -20000,
+            date: '17/02/2022'
+        },
+        {
+            description: 'App',
+            amount: 200000,
+            date: '17/02/2022'
+        },
+    ],
+    add(transaction){
+        Transaction.all.push(transaction)
+
+        App.reload();
+    },
+
+    remove(index){
+        Transaction.all.splice(index, 1)
+
+        App.reload();
+    },
+    
     incomes(){
         let income = 0;
-        transaction.forEach(transaction => {
+        Transaction.all.forEach(transaction => {
             if(transaction.amount > 0){
                 income += transaction.amount
             }
         }) 
         return income;
     },
+
     expenses(){
         let expense = 0;
-        transaction.forEach(transaction => {
+        Transaction.all.forEach(transaction => {
             if(transaction.amount < 0){
-                expense += transaction.amount
+                expense -= transaction.amount
             }
         })
 
         return expense;
     },
+
     total(){
-        return Transaction.incomes() + Transaction.expenses()
+        return Transaction.incomes() - Transaction.expenses()
     }
 }
 
@@ -104,7 +111,11 @@ const DOM = {
         document
             .getElementById("totalDisplay")
             .innerHTML =  Utils.formatCurrency(Transaction.total())
-    }
+    },
+
+    clearTransactions(){
+        DOM.transactionsContainer.innerHTML = ""
+    },
     
 }
 
@@ -125,8 +136,29 @@ const Utils = {
     }
 }
 
-transaction.forEach(function(transaction){
-    DOM.addTransaction(transaction)
-})
+const Form = {
+    submit(event){
+        event.preventDefault()
 
-DOM.updateBalance()
+        
+    }
+}
+
+const App = {
+    init(){
+
+        Transaction.all.forEach(transaction => {
+            DOM.addTransaction(transaction)
+        })
+        
+        DOM.updateBalance()
+
+    },
+
+    reload(){
+        DOM.clearTransactions();
+        App.init();
+    },
+}
+
+App.init();
