@@ -1,41 +1,29 @@
 const Modal = {
     open() {
-        //Abrir modal - adicionar class Active
         document
         .querySelector('.modal-overlay')
         .classList.add('active')
     },
     close() {
-        //Fechar modal - remover class Active
         document
         .querySelector('.modal-overlay')
         .classList.remove('active')
     }
 }
 
+const Storage ={
+    get() {
+        return JSON.parse(localStorage.getItem("dev.finances:transactions")) || []
+    },
+    set(transactions) {
+        localStorage
+        .setItem("dev.finances:transactions", JSON.stringify(transactions))
+    }
+}
+
 const Transaction = {
-    all: [
-        {
-            description: 'Luz',
-            amount: -50000,
-            date: '17/02/2022'
-        },
-        {
-            description: 'Website',
-            amount: 500000,
-            date: '17/02/2022'
-        },
-        {
-            description: 'Internet',
-            amount: -20000,
-            date: '17/02/2022'
-        },
-        {
-            description: 'App',
-            amount: 200000,
-            date: '17/02/2022'
-        },
-    ],
+    all: Storage.get(),
+    
     add(transaction){
         Transaction.all.push(transaction)
 
@@ -81,7 +69,6 @@ const DOM = {
         const tr = document.createElement('tr')
         tr.innerHTML = DOM.innerHTMLTransaction(transaction, index)
         tr.dataset.index = index
-
         DOM.transactionsContainer.appendChild(tr)
     },
 
@@ -99,7 +86,6 @@ const DOM = {
             </td>
         `
         return html
-
     },
 
     updateBalance(){
@@ -117,7 +103,6 @@ const DOM = {
     clearTransactions(){
         DOM.transactionsContainer.innerHTML = ""
     },
-    
 }
 
 const Utils = {
@@ -133,7 +118,6 @@ const Utils = {
         return (`${splittedDate[2]}/${splittedDate[1]}/${splittedDate[0]}`)
     },
 
-
     formatCurrency(value){
         const signal = Number(value) < 0 ? "-" : ""
 
@@ -148,7 +132,6 @@ const Utils = {
 
         return signal + value
     },
-
 }
 
 const Form = {
@@ -188,7 +171,6 @@ const Form = {
             amount,
             date
         }
-
     },
 
     clearFields(){
@@ -196,7 +178,6 @@ const Form = {
         Form.amount.value = "",
         Form.date.value = ""
     },
-
 
     submit(event){
         event.preventDefault()
@@ -209,11 +190,7 @@ const Form = {
             Modal.close()
         } catch (error) {
             alert(error.message)
-        }
-
-        
-
-        
+        }   
     }
 }
 
@@ -224,6 +201,7 @@ const App = {
         
         DOM.updateBalance()
 
+        Storage.set(Transaction.all)  
     },
 
     reload(){
